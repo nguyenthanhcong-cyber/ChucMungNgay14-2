@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="vi" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Heart Love Letter with Celebration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+
+    @keyframes rotate3d-slow {
+      0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+      100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(180deg); }
+    }
+
+    @keyframes rotate3d-fast {
+      0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+      100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(180deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes sparkle {
+      0%, 100% { opacity: 0.4; filter: brightness(1); }
+      50% { opacity: 1; filter: brightness(1.8); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+    }
+
+    @keyframes floating-bubble {
+      0% { 
+        transform: translateY(100vh) translateX(0) scale(0);
+        opacity: 0;
+      }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.8; }
+      100% { 
+        transform: translateY(-100vh) translateX(100px) scale(1);
+        opacity: 0;
+      }
+    }
+
+    @keyframes floating-circle {
+      0% {
+        transform: translateY(100vh) translateX(0) rotate(0deg) scale(0);
+        opacity: 0;
+      }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.6; }
+      100% {
+        transform: translateY(-100vh) translateX(150px) rotate(360deg) scale(1);
+        opacity: 0;
+      }
+    }
+
+    @keyframes orbit {
+      0% { transform: rotate(0deg) translateX(120px) rotate(0deg) scale(1); }
+      100% { transform: rotate(360deg) translateX(120px) rotate(-360deg) scale(1); }
+    }
+
+    @keyframes orbit-large {
+      0% { transform: rotate(0deg) translateX(180px) rotate(0deg); }
+      100% { transform: rotate(360deg) translateX(180px) rotate(-360deg); }
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes wave-motion {
+      0% { transform: translateX(0) translateY(0); }
+      25% { transform: translateX(20px) translateY(-10px); }
+      50% { transform: translateX(0) translateY(0); }
+      75% { transform: translateX(-20px) translateY(10px); }
+      100% { transform: translateX(0) translateY(0); }
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes fadeInBackdrop {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Animal animation */
+    @keyframes dance-jump {
+      0%, 100% { transform: translateY(0) scaleX(1); }
+      25% { transform: translateY(-60px) scaleX(1.1); }
+      50% { transform: translateY(0) scaleX(0.95); }
+      75% { transform: translateY(-40px) scaleX(1.05); }
+    }
+
+    @keyframes spin-around {
+      0% { transform: rotate(0deg) translateX(150px); }
+      100% { transform: rotate(360deg) translateX(150px); }
+    }
+
+    @keyframes bounce-around {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(100px, -80px); }
+      50% { transform: translate(-80px, 100px); }
+      75% { transform: translate(60px, -100px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    @keyframes firework-burst {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--tx), var(--ty)) scale(0);
+        opacity: 0;
+      }
+    }
+
+    @keyframes confetti-fall {
+      0% {
+        transform: translateY(-10px) rotateZ(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotateZ(720deg);
+        opacity: 0;
+      }
+    }
+
+    .heart-3d-wrapper {
+      perspective: 1500px;
+    }
+
+    .heart-container {
+      animation: rotate3d-slow 25s linear infinite, pulse 3s ease-in-out infinite;
+      transform-style: preserve-3d;
+      position: relative;
+      width: 380px;
+      height: 380px;
+      cursor: pointer;
+      transition: animation 0.3s ease;
+    }
+
+    .heart-container.rotating-fast {
+      animation: rotate3d-fast 8s linear infinite, pulse 2s ease-in-out infinite;
+    }
+
+    .mini-heart-3d {
+      position: absolute;
+      transform-style: preserve-3d;
+    }
+
+    .floating {
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .bg-particle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: sparkle 2s ease-in-out infinite;
+    }
+
+    .floating-bubble {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: floating-bubble var(--duration) linear infinite;
+    }
+
+    .floating-circle {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid;
+      pointer-events: none;
+      animation: floating-circle var(--duration) ease-in linear infinite;
+    }
+
+    .orbiting-heart {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      animation: orbit var(--duration) linear infinite;
+    }
+
+    .orbiting-circle-container {
+      position: absolute;
+      pointer-events: none;
+      animation: orbit-large var(--duration) linear infinite;
+    }
+
+    .orbiting-circle-item {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid;
+    }
+
+    .twinkling-star {
+      position: absolute;
+      pointer-events: none;
+      animation: twinkle var(--duration) ease-in-out infinite;
+    }
+
+    .wave-element {
+      position: absolute;
+      pointer-events: none;
+      animation: wave-motion var(--duration) ease-in-out infinite;
+    }
+
+    /* Celebration elements */
+    .celebration-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .dancing-animal {
+      position: absolute;
+      font-size: 80px;
+      animation: dance-jump 1.5s ease-in-out infinite;
+      z-index: 998;
+    }
+
+    .dancing-animal.spin {
+      animation: spin-around 3s linear infinite, dance-jump 1.5s ease-in-out infinite;
+    }
+
+    .dancing-animal.bounce {
+      animation: bounce-around 4s ease-in-out infinite;
+    }
+
+    .firework {
+      position: fixed;
+      pointer-events: none;
+      z-index: 998;
+    }
+
+    .firework-particle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      animation: firework-burst 1s ease-out forwards;
+    }
+
+    .confetti {
+      position: fixed;
+      pointer-events: none;
+      animation: confetti-fall 3s ease-in forwards;
+      z-index: 997;
+    }
+
+    .love-letter-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      animation: fadeInBackdrop 0.3s ease;
+      backdrop-filter: blur(2px);
+    }
+
+    .love-letter-card {
+      background: linear-gradient(135deg, #fff5f7 0%, #ffe4eb 100%);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(255, 77, 109, 0.4), 0 0 40px rgba(255, 77, 109, 0.2);
+      animation: slideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: 2px solid #ff4d6d;
+      position: relative;
+    }
+
+    .love-letter-card::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 40px;
+      background: linear-gradient(135deg, #ff4d6d 0%, #ff8fa3 100%);
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      filter: drop-shadow(0 5px 10px rgba(255, 77, 109, 0.3));
+    }
+
+    .letter-title {
+      font-family: 'Georgia', serif;
+      font-size: 28px;
+      font-weight: bold;
+      color: #ff4d6d;
+      text-align: center;
+      margin-bottom: 15px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .letter-date {
+      text-align: center;
+      color: #ff8fa3;
+      font-size: 14px;
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+
+    .letter-content {
+      font-family: 'Georgia', serif;
+      font-size: 16px;
+      line-height: 1.8;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: justify;
+      white-space: pre-wrap;
+    }
+
+    .letter-signature {
+      text-align: right;
+      font-family: 'Brush Script MT', cursive;
+      font-size: 24px;
+      color: #ff4d6d;
+      margin-top: 30px;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: #ff4d6d;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.3);
+    }
+
+    .close-btn:hover {
+      background: #ff1744;
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(255, 77, 109, 0.5);
+    }
+
+    .heart-decoration {
+      position: absolute;
+      font-size: 24px;
+      opacity: 0.3;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .heart-decoration:nth-child(1) { top: 20px; left: 20px; animation-delay: 0s; }
+    .heart-decoration:nth-child(2) { bottom: 20px; right: 20px; animation-delay: 1s; }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full m-0 overflow-auto">
+   <audio id="click-audio">
+    <source src="click-sound.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="bg-music" loop>
+    <source src="love.mp3" type="audio/mpeg">
+</audio>
+  <div id="app-wrapper" class="w-full h-full flex flex-col items-center justify-center overflow-hidden relative" style="background: linear-gradient(135deg, #0a0015 0%, #1a0a2e 50%, #0f0f23 100%);"><!-- Animated Background Layers -->
+   <div id="animated-background" class="absolute inset-0 pointer-events-none overflow-hidden">
+    <div id="bubbles-container"></div>
+    <div id="circles-container"></div>
+    <div id="orbiting-hearts-container"></div>
+    <div id="orbiting-circles-container"></div>
+    <div id="stars-container"></div>
+    <div id="waves-container"></div>
+   </div><!-- Background particles -->
+   <div id="particles" class="absolute inset-0 pointer-events-none"></div><!-- Celebration overlay -->
+   <div id="celebration-overlay" class="celebration-overlay" style="display: none;"></div><!-- Main 3D heart -->
+   <div class="floating">
+    <div class="heart-3d-wrapper">
+     <div id="heart-main" class="heart-container"><!-- Mini hearts will be generated by JavaScript -->
+     </div>
+    </div>
+   </div><!-- Message -->
+   <p id="message" class="mt-8 text-2xl font-bold tracking-wider floating" style="font-family: 'Georgia', serif; color: #ff6b8a; text-shadow: 0 0 20px #ff4d6d, 0 0 40px #ff4d6d; animation-delay: 0.5s; position: relative; z-index: 10;">💕 Click vào trái tim 💕</p>
+  </div><!-- Love Letter Modal (hidden by default) -->
+  <div id="love-letter-modal" style="display: none;">
+   <div class="love-letter-backdrop" onclick="closeLoveLetter(event)">
+    <div class="love-letter-card" onclick="event.stopPropagation()"><button class="close-btn" onclick="closeLoveLetter()">✕</button>
+     <div class="heart-decoration">
+      💝
+     </div>
+     <div class="heart-decoration">
+      💝
+     </div>
+     <h1 class="letter-title" id="letter-title">Happy Valentine's Day ❤️</h1>
+     <p class="letter-date" id="letter-date">February 14, 2025</p>
+     <p class="letter-content" id="letter-content">Dearest, On this special day of love and romance, I want you to know that my heart belongs entirely to you. Every moment with you is a treasure, every smile you give me is a gift, and every beat of my heart says your name. You are my greatest blessing, my forever love, and my reason to smile every single day. Your love has transformed my life into something beautiful and meaningful. Happy Valentine's Day to the one who holds my heart forever. With Love ❤️</p>
+     <div class="letter-signature">
+      With Love ❤️
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      message_text: "💕 Click vào trái tim 💕",
+      letter_title: "Happy Valentine's Day ❤️",
+      letter_content: "Dearest,\n\nOn this special day of love and romance, I want you to know that my heart belongs entirely to you. Every moment with you is a treasure, every smile you give me is a gift, and every beat of my heart says your name.\n\nYou are my greatest blessing, my forever love, and my reason to smile every single day. Your love has transformed my life into something beautiful and meaningful.\n\nHappy Valentine's Day to the one who holds my heart forever.\n\nWith Love ❤️",
+      primary_color: "#ff4d6d",
+      secondary_color: "#ff8fa3",
+      accent_color: "#ffd6e0",
+      background_color: "#0a0015",
+      text_color: "#ff6b8a"
+    };
+
+    let config = { ...defaultConfig };
+    let isHovering = false;
+    let isCelebrating = false;
+
+    // Heart shape parametric equations
+    function heartX(t) {
+      return 16 * Math.pow(Math.sin(t), 3);
+    }
+
+    function heartY(t) {
+      return -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+    }
+
+    // Generate animated background elements
+    function generateAnimatedBackground() {
+      const colors = [
+        config.primary_color || defaultConfig.primary_color,
+        config.secondary_color || defaultConfig.secondary_color,
+        config.accent_color || defaultConfig.accent_color
+      ];
+
+      const bubblesContainer = document.getElementById('bubbles-container');
+      bubblesContainer.innerHTML = '';
+      for (let i = 0; i < 8; i++) {
+        const bubble = document.createElement('div');
+        bubble.className = 'floating-bubble';
+        bubble.style.left = `${Math.random() * 100}%`;
+        bubble.style.width = `${30 + Math.random() * 60}px`;
+        bubble.style.height = bubble.style.width;
+        bubble.style.background = colors[Math.floor(Math.random() * colors.length)];
+        bubble.style.setProperty('--duration', `${8 + Math.random() * 6}s`);
+        bubble.style.animationDelay = `${Math.random() * 2}s`;
+        bubble.style.opacity = 0.3 + Math.random() * 0.4;
+        bubble.style.filter = `drop-shadow(0 0 20px ${colors[Math.floor(Math.random() * colors.length)]})`;
+        bubblesContainer.appendChild(bubble);
+      }
+
+      const circlesContainer = document.getElementById('circles-container');
+      circlesContainer.innerHTML = '';
+      for (let i = 0; i < 6; i++) {
+        const circle = document.createElement('div');
+        circle.className = 'floating-circle';
+        circle.style.left = `${Math.random() * 100}%`;
+        circle.style.width = `${40 + Math.random() * 80}px`;
+        circle.style.height = circle.style.width;
+        circle.style.borderColor = colors[Math.floor(Math.random() * colors.length)];
+        circle.style.setProperty('--duration', `${10 + Math.random() * 8}s`);
+        circle.style.animationDelay = `${Math.random() * 3}s`;
+        circle.style.filter = `drop-shadow(0 0 15px ${colors[Math.floor(Math.random() * colors.length)]})`;
+        circlesContainer.appendChild(circle);
+      }
+
+      const orbitingHeartsContainer = document.getElementById('orbiting-hearts-container');
+      orbitingHeartsContainer.innerHTML = '';
+      for (let i = 0; i < 4; i++) {
+        const orbit = document.createElement('div');
+        orbit.className = 'orbiting-heart';
+        orbit.style.left = '50%';
+        orbit.style.top = '50%';
+        orbit.style.transform = `translate(-50%, -50%)`;
+        orbit.style.setProperty('--duration', `${15 + i * 5}s`);
+        
+        const heartSvg = document.createElement('div');
+        const size = 16 + Math.random() * 12;
+        heartSvg.innerHTML = `
+          <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${colors[i % colors.length]}" style="filter: drop-shadow(0 0 8px ${colors[i % colors.length]});">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        `;
+        orbit.appendChild(heartSvg);
+        orbitingHeartsContainer.appendChild(orbit);
+      }
+
+      const orbitingCirclesContainer = document.getElementById('orbiting-circles-container');
+      orbitingCirclesContainer.innerHTML = '';
+      for (let i = 0; i < 3; i++) {
+        const container = document.createElement('div');
+        container.className = 'orbiting-circle-container';
+        container.style.left = '50%';
+        container.style.top = '50%';
+        container.style.transform = `translate(-50%, -50%)`;
+        container.style.setProperty('--duration', `${20 + i * 8}s`);
+        
+        for (let j = 0; j < 6; j++) {
+          const circle = document.createElement('div');
+          circle.className = 'orbiting-circle-item';
+          circle.style.width = `${8 + Math.random() * 6}px`;
+          circle.style.height = circle.style.width;
+          circle.style.borderColor = colors[(i + j) % colors.length];
+          circle.style.left = `${Math.cos(j * Math.PI / 3) * 50}px`;
+          circle.style.top = `${Math.sin(j * Math.PI / 3) * 50}px`;
+          circle.style.filter = `drop-shadow(0 0 8px ${colors[(i + j) % colors.length]})`;
+          container.appendChild(circle);
+        }
+        orbitingCirclesContainer.appendChild(container);
+      }
+
+      const starsContainer = document.getElementById('stars-container');
+      starsContainer.innerHTML = '';
+      for (let i = 0; i < 20; i++) {
+        const star = document.createElement('div');
+        star.className = 'twinkling-star';
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.setProperty('--duration', `${2 + Math.random() * 3}s`);
+        star.style.animationDelay = `${Math.random() * 2}s`;
+        
+        const size = 2 + Math.random() * 4;
+        star.innerHTML = `
+          <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${colors[Math.floor(Math.random() * colors.length)]}" style="filter: drop-shadow(0 0 4px ${colors[Math.floor(Math.random() * colors.length)]});">
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
+        `;
+        starsContainer.appendChild(star);
+      }
+
+      const wavesContainer = document.getElementById('waves-container');
+      wavesContainer.innerHTML = '';
+      for (let i = 0; i < 5; i++) {
+        const wave = document.createElement('div');
+        wave.className = 'wave-element';
+        wave.style.left = `${i * 20}%`;
+        wave.style.top = `${Math.random() * 100}%`;
+        wave.style.setProperty('--duration', `${4 + Math.random() * 3}s`);
+        wave.style.animationDelay = `${i * 0.5}s`;
+        
+        const size = 20 + Math.random() * 20;
+        wave.innerHTML = `
+          <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${colors[Math.floor(Math.random() * colors.length)]}" style="filter: drop-shadow(0 0 10px ${colors[Math.floor(Math.random() * colors.length)]});">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        `;
+        wavesContainer.appendChild(wave);
+      }
+    }
+
+    // Generate mini 3D hearts
+    function generateHearts() {
+      const container = document.getElementById('heart-main');
+      container.innerHTML = '';
+      
+      const numHearts = 100;
+      const scale = 10;
+      const centerX = 190;
+      const centerY = 170;
+      
+      const colors = [
+        config.primary_color || defaultConfig.primary_color,
+        config.secondary_color || defaultConfig.secondary_color,
+        config.accent_color || defaultConfig.accent_color
+      ];
+      
+      for (let i = 0; i < numHearts; i++) {
+        const t = (i / numHearts) * 2 * Math.PI;
+        const x = centerX + heartX(t) * scale;
+        const y = centerY + heartY(t) * scale;
+        
+        const mini = document.createElement('div');
+        mini.className = 'mini-heart-3d';
+        mini.style.left = `${x}px`;
+        mini.style.top = `${y}px`;
+        mini.style.width = '20px';
+        mini.style.height = '20px';
+        
+        const rotX = Math.random() * 360;
+        const rotY = Math.random() * 360;
+        const rotZ = Math.random() * 360;
+        mini.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg)`;
+        
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const size = 10 + Math.random() * 8;
+        
+        mini.innerHTML = `
+          <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}" style="filter: drop-shadow(0 0 8px ${color});">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        `;
+        
+        container.appendChild(mini);
+      }
+      
+      for (let i = 0; i < 50; i++) {
+        const angle = Math.random() * 2 * Math.PI;
+        const radius = Math.random() * 0.8;
+        const x = centerX + heartX(angle) * scale * radius;
+        const y = centerY + heartY(angle) * scale * radius;
+        
+        const mini = document.createElement('div');
+        mini.className = 'mini-heart-3d';
+        mini.style.left = `${x}px`;
+        mini.style.top = `${y}px`;
+        mini.style.width = '20px';
+        mini.style.height = '20px';
+        
+        const rotX = Math.random() * 360;
+        const rotY = Math.random() * 360;
+        const rotZ = Math.random() * 360;
+        mini.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg)`;
+        
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const size = 8 + Math.random() * 6;
+        
+        mini.innerHTML = `
+          <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}" style="filter: drop-shadow(0 0 6px ${color}); opacity: 0.8;">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        `;
+        
+        container.appendChild(mini);
+      }
+    }
+
+    // Generate background particles
+    function generateParticles() {
+      const container = document.getElementById('particles');
+      container.innerHTML = '';
+      
+      for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'bg-particle';
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        particle.style.width = `${2 + Math.random() * 5}px`;
+        particle.style.height = particle.style.width;
+        particle.style.background = [
+          config.primary_color || defaultConfig.primary_color,
+          config.secondary_color || defaultConfig.secondary_color,
+          config.accent_color || defaultConfig.accent_color
+        ][Math.floor(Math.random() * 3)];
+        particle.style.animationDelay = `${Math.random() * 3}s`;
+        particle.style.opacity = 0.2 + Math.random() * 0.5;
+        container.appendChild(particle);
+      }
+    }
+
+    // Create celebration with dancing animals
+    function startCelebration() {
+      if (isCelebrating) return;
+      isCelebrating = true;
+
+      const overlay = document.getElementById('celebration-overlay');
+      overlay.style.display = 'block';
+
+      const animals = ['🎉', '🎊', '🎁', '💝', '🌹', '💐', '🦋', '🐦', '🦚', '🐰'];
+      const colors = [
+        config.primary_color || defaultConfig.primary_color,
+        config.secondary_color || defaultConfig.secondary_color,
+        config.accent_color || defaultConfig.accent_color
+      ];
+
+      // Create dancing animals
+      for (let i = 0; i < 6; i++) {
+        const animal = document.createElement('div');
+        animal.className = `dancing-animal ${['spin', 'bounce', ''][i % 3]}`;
+        animal.textContent = animals[Math.floor(Math.random() * animals.length)];
+        animal.style.left = `${Math.random() * 80 + 10}%`;
+        animal.style.top = `${Math.random() * 60 + 20}%`;
+        overlay.appendChild(animal);
+      }
+
+      // Create continuous fireworks
+      const fireworkInterval = setInterval(() => {
+        createFireworks();
+      }, 300);
+
+      // Create confetti
+      for (let i = 0; i < 30; i++) {
+        createConfetti();
+      }
+
+      // Stop celebration after 5 seconds
+      setTimeout(() => {
+        clearInterval(fireworkInterval);
+        overlay.innerHTML = '';
+        overlay.style.display = 'none';
+        isCelebrating = false;
+        showLoveLetter();
+      }, 5000);
+    }
+
+    // Create fireworks effect
+    function createFireworks() {
+      const overlay = document.getElementById('celebration-overlay');
+      const x = Math.random() * window.innerWidth;
+      const y = Math.random() * window.innerHeight;
+
+      const colors = [
+        config.primary_color || defaultConfig.primary_color,
+        config.secondary_color || defaultConfig.secondary_color,
+        config.accent_color || defaultConfig.accent_color
+      ];
+
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'firework-particle';
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+        const angle = (Math.PI * 2 * i) / 20;
+        const velocity = 5 + Math.random() * 10;
+        const tx = Math.cos(angle) * velocity * 100;
+        const ty = Math.sin(angle) * velocity * 100;
+
+        particle.style.setProperty('--tx', `${tx}px`);
+        particle.style.setProperty('--ty', `${ty}px`);
+        particle.style.filter = `drop-shadow(0 0 10px ${colors[Math.floor(Math.random() * colors.length)]})`;
+
+        overlay.appendChild(particle);
+
+        setTimeout(() => particle.remove(), 1000);
+      }
+    }
+
+    // Create confetti
+    function createConfetti() {
+      const overlay = document.getElementById('celebration-overlay');
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+
+      const shapes = ['❤️', '💕', '💖', '✨', '⭐'];
+      confetti.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+      confetti.style.left = `${Math.random() * 100}%`;
+      confetti.style.top = '-20px';
+      confetti.style.fontSize = `${16 + Math.random() * 20}px`;
+      confetti.style.animationDelay = `${Math.random() * 1}s`;
+      confetti.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
+
+      overlay.appendChild(confetti);
+
+      setTimeout(() => confetti.remove(), 3500);
+    }
+
+    // Show love letter
+    function showLoveLetter() {
+      const modal = document.getElementById('love-letter-modal');
+      modal.style.display = 'flex';
+      
+      document.getElementById('letter-title').textContent = config.letter_title || defaultConfig.letter_title;
+      document.getElementById('letter-content').textContent = config.letter_content || defaultConfig.letter_content;
+    }
+
+    // Open love letter with celebration
+function openLoveLetter() {
+    // 1. Lấy 2 đối tượng âm thanh
+    var clickSound = document.getElementById("click-audio");
+    var bgMusic = document.getElementById("bg-music");
+
+    // 2. Phát âm thanh "click" ngay lập tức
+    if (clickSound) {
+        clickSound.play().catch(e => console.log("Lỗi phát âm thanh click"));
+    }
+
+    // 3. Chạy hiệu ứng pháo hoa/animal ngay lập tức
+    startCelebration();
+
+    // 4. Đợi 5 giây (5000ms) rồi mới phát nhạc nền chính
+    setTimeout(function() {
+        if (bgMusic) {
+            bgMusic.volume = 0.6; // Bạn có thể chỉnh âm lượng tùy ý
+            bgMusic.play().catch(e => console.log("Lỗi phát nhạc nền chính"));
+        }
+    }, 5000);
+}
+    // Close love letter
+    function closeLoveLetter(event) {
+      if (event && event.target !== event.currentTarget) return;
+      
+      const modal = document.getElementById('love-letter-modal');
+      modal.style.display = 'none';
+      // THÊM ĐOẠN NÀY ĐỂ TẮT NHẠC KHI ĐÓNG
+      var audio = document.getElementById("bg-music");
+      if(audio) {
+          audio.pause();
+          audio.currentTime = 0; // Tua lại từ đầu (nếu muốn)
+      }
+    }
+
+    // Heart container events
+    function setupHeartEvents() {
+      const heartContainer = document.getElementById('heart-main');
+      
+      heartContainer.addEventListener('mouseenter', () => {
+        isHovering = true;
+        heartContainer.classList.add('rotating-fast');
+      });
+      
+      heartContainer.addEventListener('mouseleave', () => {
+        isHovering = false;
+        heartContainer.classList.remove('rotating-fast');
+      });
+      
+      heartContainer.addEventListener('click', openLoveLetter);
+    }
+
+    // Initialize
+    function init() {
+      generateHearts();
+      generateParticles();
+      generateAnimatedBackground();
+      setupHeartEvents();
+      
+      const messageEl = document.getElementById('message');
+      messageEl.textContent = config.message_text || defaultConfig.message_text;
+    }
+
+    // Element SDK integration
+    async function onConfigChange(newConfig) {
+      config = { ...defaultConfig, ...newConfig };
+      
+      const messageEl = document.getElementById('message');
+      messageEl.textContent = config.message_text || defaultConfig.message_text;
+      messageEl.style.color = config.text_color || defaultConfig.text_color;
+      messageEl.style.textShadow = `0 0 20px ${config.primary_color || defaultConfig.primary_color}, 0 0 40px ${config.primary_color || defaultConfig.primary_color}`;
+      
+      const appWrapper = document.getElementById('app-wrapper');
+      appWrapper.style.background = `linear-gradient(135deg, ${config.background_color || defaultConfig.background_color} 0%, #1a0a2e 50%, #0f0f23 100%)`;
+      
+      generateHearts();
+      generateParticles();
+      generateAnimatedBackground();
+    }
+
+    function mapToCapabilities(cfg) {
+      return {
+        recolorables: [
+          {
+            get: () => cfg.background_color || defaultConfig.background_color,
+            set: (value) => { cfg.background_color = value; window.elementSdk.setConfig({ background_color: value }); }
+          },
+          {
+            get: () => cfg.primary_color || defaultConfig.primary_color,
+            set: (value) => { cfg.primary_color = value; window.elementSdk.setConfig({ primary_color: value }); }
+          },
+          {
+            get: () => cfg.secondary_color || defaultConfig.secondary_color,
+            set: (value) => { cfg.secondary_color = value; window.elementSdk.setConfig({ secondary_color: value }); }
+          },
+          {
+            get: () => cfg.accent_color || defaultConfig.accent_color,
+            set: (value) => { cfg.accent_color = value; window.elementSdk.setConfig({ accent_color: value }); }
+          },
+          {
+            get: () => cfg.text_color || defaultConfig.text_color,
+            set: (value) => { cfg.text_color = value; window.elementSdk.setConfig({ text_color: value }); }
+          }
+        ],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      };
+    }
+
+    function mapToEditPanelValues(cfg) {
+      return new Map([
+        ["message_text", cfg.message_text || defaultConfig.message_text],
+        ["letter_title", cfg.letter_title || defaultConfig.letter_title],
+        ["letter_content", cfg.letter_content || defaultConfig.letter_content]
+      ]);
+    }
+
+    // Initialize SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+
+    init();
+
+    // Close letter on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeLoveLetter();
+      }
+    });
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cc10db0514efceb',t:'MTc3MDc4MzYyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
