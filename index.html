@@ -789,27 +789,26 @@
     }
 
     // Open love letter with celebration
-function openLoveLetter() {
-    // 1. Lấy 2 đối tượng âm thanh
-    var clickSound = document.getElementById("click-audio");
-    var bgMusic = document.getElementById("bg-music");
+// Open love letter with celebration
+    function openLoveLetter() {
+      // 1. Lấy đối tượng nhạc từ ID đã đặt ở trên
+      var clickAudio = document.getElementById("click-audio");
+      var bgMusic = document.getElementById("bg-music");
 
-    // 2. Phát âm thanh "click" ngay lập tức
-    if (clickSound) {
-        clickSound.play().catch(e => console.log("Lỗi phát âm thanh click"));
+      // 2. Phát tiếng click ngay lập tức (nếu có file)
+      if (clickAudio) clickAudio.play().catch(e => console.log(e));
+
+      // 3. Chạy hiệu ứng pháo hoa
+      startCelebration();
+
+      // 4. Đợi 5 giây rồi phát nhạc nền (khớp với lúc hiện thư)
+      setTimeout(function() {
+          if (bgMusic) {
+              bgMusic.volume = 0.5; // Chỉnh âm lượng 50%
+              bgMusic.play().catch(e => console.log("Lỗi phát nhạc: " + e));
+          }
+      }, 5000);
     }
-
-    // 3. Chạy hiệu ứng pháo hoa/animal ngay lập tức
-    startCelebration();
-
-    // 4. Đợi 5 giây (5000ms) rồi mới phát nhạc nền chính
-    setTimeout(function() {
-        if (bgMusic) {
-            bgMusic.volume = 0.6; // Bạn có thể chỉnh âm lượng tùy ý
-            bgMusic.play().catch(e => console.log("Lỗi phát nhạc nền chính"));
-        }
-    }, 5000);
-}
     // Close love letter
     function closeLoveLetter(event) {
       if (event && event.target !== event.currentTarget) return;
@@ -928,5 +927,6 @@ function openLoveLetter() {
   </script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cc10db0514efceb',t:'MTc3MDc4MzYyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+
 
 
